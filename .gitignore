@@ -1,0 +1,3 @@
+vagrant_libvirt/.vagrant/
+vagrant_libvirt/box/
+vagrant_libvirt/packer_cache/
