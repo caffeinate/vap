@@ -6,11 +6,11 @@ Vagrant + Ansible + Packer
 
 I'd like a development and deployment environment with the following:
 
-* Vagrant for local development
-* Use Vmware fusion for self contained private demonstration
-* AWS for a public server
+* Vagrant - local development
+* Vmware fusion - self contained local version
+* AWS EC2 instance - a public access
 
-This repo. is intended as a reference to tie together the tools I used-
+This repository is a reference to tie together the tools I used-
 * Packer - building system images
 * Vagrant - instantiating local virtual machines
 * Ansible - orchestration - installing packages and data
@@ -57,6 +57,24 @@ The first time this is run it will need to download the 595M ubuntu image.
 ...
 [si@buru vagrant_libvirt]$ vagrant up
 ```
-You should now have a local virtual machine.
+You should now have a local virtual machine and should be able to do the following-
 
+```Shell
+[si@buru vagrant_libvirt]$ virsh list
+ Id    Name                           State
+----------------------------------------------------
+ 16    vagrant_libvirt_vap_vm         running
 
+[si@buru vagrant_libvirt]$ vagrant ssh
+Welcome to Ubuntu 14.04.2 LTS (GNU/Linux 3.16.0-30-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+Last login: Thu May 28 13:33:46 2015 from 192.168.121.1
+vagrant@packer-vap:~$ 
+```
+
+###Ansible
+
+Provisioning could be done by vagrant or packer. To keep it as similar as possible
+between the 3 images this is done by packer. But being idempotent and as Vagrant
+is there to help with the build, it runs ansible as well.

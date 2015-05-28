@@ -1,0 +1,3 @@
+#!/bin/sh
+echo
+echo "hello world, this is the motd"
