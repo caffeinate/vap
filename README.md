@@ -15,9 +15,6 @@ This repository is a reference to tie together the tools I used-
 * Vagrant - instantiating local virtual machines
 * Ansible - orchestration - installing packages and data
 
-There is an overlap in functionality with all of these devops tools so I'll aim
-to keep this to a minimum by getting ansible to do as much work as possible.
-
 Ansible Galaxy is great but I want this to be simple and self contained so it
 is easier to use for reference.
 
@@ -73,8 +70,25 @@ Last login: Thu May 28 13:33:46 2015 from 192.168.121.1
 vagrant@packer-vap:~$ 
 ```
 
+To remove the box and delete the volume from libvirt (this needs to be
+run before importing a subsequent build)-
+```Shell
+[si@buru vagrant_libvirt]$ vagrant box remove vap
+...
+[si@buru vagrant_libvirt]$ virsh vol-list default
+ Name                 Path                                    
+------------------------------------------------------------------------------
+ vap_vagrant_box_image_0.img /var/lib/libvirt/images/vap_vagrant_box_image_0.img
+
+[si@buru vagrant_libvirt]$ virsh vol-delete vap_vagrant_box_image_0.img --pool default
+Vol vap_vagrant_box_image_0.img deleted
+```
+
 ###Ansible
 
 Provisioning could be done by vagrant or packer. To keep it as similar as possible
 between the 3 images this is done by packer. But being idempotent and as Vagrant
 is there to help with the build, it runs ansible as well.
+
+
+

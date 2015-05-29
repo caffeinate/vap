@@ -8,8 +8,7 @@
     "builders":
     [
         {
-            "name": "vap",
-
+	    "vm_name": "vap",
             "type": "qemu",
             "format": "qcow2",
             "accelerator": "kvm",
@@ -51,7 +50,8 @@
             "type": "shell",
             "execute_command": "echo '{{user `password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
             "scripts": [
-                "scripts/update.sh",
+		"scripts/update.sh",
+                "scripts/packages.sh",
                 "scripts/network.sh",
                 "scripts/vagrant.sh"
             ]
@@ -60,7 +60,8 @@
 
     "post-processors": [
         {
-            "keep_input_artifact": false,
+	    "only": ["qemu"],
+            "keep_input_artifact": true,
             "output": "box/vap.box",
             "type": "vagrant"
         }
