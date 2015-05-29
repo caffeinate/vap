@@ -8,7 +8,7 @@
     "builders":
     [
         {
-	    "vm_name": "vap",
+	    "vm_name": "vap-stage1",
             "type": "qemu",
             "format": "qcow2",
             "accelerator": "kvm",
@@ -62,7 +62,7 @@
         {
 	    "only": ["qemu"],
             "keep_input_artifact": true,
-            "output": "box/vap.box",
+            "output": "box/vap_stage1.box",
             "type": "vagrant"
         }
     ]
