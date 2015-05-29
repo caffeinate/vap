@@ -1,0 +1,53 @@
+{
+    "variables": {
+        "user": "vagrant",
+        "password": "vagrant",
+        "disk_size": 10000
+    },
+
+    "builders":
+    [
+        {
+	    "vm_name": "vap-stage2",
+            "type": "qemu",
+            "format": "qcow2",
+            "accelerator": "kvm",
+            "disk_image" : true,
+            "disk_size": "{{ user `disk_size`}}",
+
+            "iso_url": "../stage1/output-qemu/vap-stage1.qcow2",
+            "iso_checksum": "c3acf2c6a5171877314f6059ac5a64b2",
+            "iso_checksum_type": "md5",
+
+            "http_directory": "http",
+
+            "ssh_username": "{{user `user`}}",
+            "ssh_password": "{{user `password`}}",
+            "shutdown_command": "echo '{{user `password`}}'|sudo -S shutdown -P now",
+
+            "boot_wait": "2s"
+        }
+    ],
+
+    "provisioners": [
+	{
+            "type": "shell",
+            "execute_command": "echo '{{user `password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+            "script": "sleepme.sh"
+        },
+        {
+	    "type": "ansible-local",
+	    "playbook_file": "../ansible/playbook.yml",
+	    "playbook_dir": "../ansible/"
+	}
+    ],
+
+    "post-processors": [
+        {
+	    "only": ["qemu"],
+            "keep_input_artifact": true,
+            "output": "box/vap_stage2.box",
+            "type": "vagrant"
+        }
+    ]
+}

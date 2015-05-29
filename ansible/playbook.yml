@@ -4,4 +4,4 @@
   remote_user: vagrant
   tasks:
     - name: motd
-      action: copy src=files/motd dest=/etc/update-motd.d/95-ansible mode=755
+      action: copy src=files/motd dest=/etc/update-motd.d/95-ansible owner=root group=root mode=755
