@@ -18,7 +18,7 @@ This repository is a reference to tie together the tools I used-
 Ansible Galaxy is great but I want this to be simple and self contained so it
 is easier to use for reference.
 
-###Stage 1 - /vagrant_libvirt/ - build qemu+kvm image
+###Stage 1 - build qemu+kvm image
 
 I mainly develop on a Linux workstation and like libvirt for running virtual 
 machines. Libvirt combines QEMU and KVM to make hardware virtualised 
@@ -50,22 +50,22 @@ Build the box...
 The first time this is run it will need to download the 595M ubuntu image.
 
 ```Shell
-[si@buru vagrant_libvirt]$ packer build packer_stage1.json
+[si@buru stage1]$ packer build packer_stage1.json
 ...
-[si@buru vagrant_libvirt]$ vagrant box add vap_stage1 box/vap_stage1.box
+[si@buru stage1]$ vagrant box add vap_stage1 box/vap_stage1.box
 ...
-[si@buru vagrant_libvirt]$ cd vagrant/
+[si@buru stage1]$ cd vagrant/
 [si@buru vagrant]$ vagrant up
 ```
 You should now have a local virtual machine and should be able to do the following-
 
 ```Shell
-[si@buru vagrant_libvirt]$ virsh list
+[si@buru stage1]$ virsh list
  Id    Name                           State
 ----------------------------------------------------
- 16    vagrant_libvirt_vap_vm         running
+ 16    stage1_vap_vm         running
 
-[si@buru vagrant_libvirt]$ vagrant ssh
+[si@buru stage1]$ vagrant ssh
 Welcome to Ubuntu 14.04.2 LTS (GNU/Linux 3.16.0-30-generic x86_64)
 
  * Documentation:  https://help.ubuntu.com/
@@ -77,8 +77,8 @@ You could also import and then run the virtual machine using virsh like this-
 (you'll need to put the qcow disk image somewhere the qemu user can access it)
 
 ```Shell
-[si@buru vagrant_libvirt]$ sudo cp output-qemu/vap-stage1.qcow2 /data
-[si@buru vagrant_libvirt]$ sudo virt-install --name demo \
+[si@buru stage1]$ sudo cp output-qemu/vap-stage1.qcow2 /data
+[si@buru stage1]$ sudo virt-install --name demo \
 >               --ram 512 \
 >               --disk path=/data/vap-stage1.qcow2 \
 >               --import
@@ -87,12 +87,12 @@ You could also import and then run the virtual machine using virsh like this-
 To remove the box and delete the volume from libvirt (this needs to be
 done before importing a subsequent build)-
 ```Shell
-[si@buru vagrant_libvirt]$ vagrant destroy
+[si@buru stage1]$ vagrant destroy
 ==> vap_vm: Removing domain...
-[si@buru vagrant_libvirt]$ vagrant box remove vap_stage1
+[si@buru stage1]$ vagrant box remove vap_stage1
 ...
-[si@buru vagrant_libvirt]$ rm -r -f output-qemu
-[si@buru vagrant_libvirt]$ rm -r -f box
+[si@buru stage1]$ rm -r -f output-qemu
+[si@buru stage1]$ rm -r -f box
 [si@buru vagrant]$ virsh vol-list default
  Name                 Path                                    
 ------------------------------------------------------------------------------

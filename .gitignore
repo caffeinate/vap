@@ -1,4 +1,4 @@
-vagrant_libvirt/.vagrant/
-vagrant_libvirt/box/
-vagrant_libvirt/packer_cache/
-vagrant_libvirt/output-qemu/
+stage1/.vagrant/
+stage1/box/
+stage1/packer_cache/
+stage1/output-qemu/
