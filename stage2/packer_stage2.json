@@ -8,7 +8,7 @@
     "builders":
     [
         {
-	    "vm_name": "vap-stage2",
+	        "vm_name": "vap-stage2",
             "type": "qemu",
             "format": "qcow2",
             "accelerator": "kvm",

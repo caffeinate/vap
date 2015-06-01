@@ -1,5 +1,9 @@
 Vagrant.configure("2") do |config|
   config.vm.define :vap_vm do |vap_vm|
-    vap_vm.vm.box = "vap_stage1"
+    if ENV['ENV'] == 'libvirt'
+        vap_vm.vm.box = "vap_stage1"
+    else
+        vap_vm.vm.box = "hashicorp/precise32"
+    end
   end
 end
