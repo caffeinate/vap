@@ -1,9 +1,9 @@
 Vagrant.configure("2") do |config|
   config.vm.define :vap_vm do |vap_vm|
     if File.file?("/etc/libvirt/libvirt.conf")
-        vap_vm.vm.box = "vap_stage1"
+        vap_vm.vm.box = "vap_stage2"
     else
-        vap_vm.vm.box = "hashicorp/precise32"
+        vap_vm.vm.box = "not_built_virtual_box_image_yet"
     end
   end
 end

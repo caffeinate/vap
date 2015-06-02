@@ -1,4 +1,4 @@
-stage1/.vagrant/
-stage1/box/
-stage1/packer_cache/
-stage1/output-qemu/
+stage?/vagrant/.vagrant/
+stage?/box/
+stage?/packer_cache/
+stage?/output-qemu/

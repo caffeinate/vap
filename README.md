@@ -73,15 +73,9 @@ Last login: Thu May 28 13:33:46 2015 from 192.168.121.1
 vagrant@packer-vap:~$ 
 ```
 
-You could also import and then run the virtual machine using virsh like this-
-(you'll need to put the qcow disk image somewhere the qemu user can access it)
-
+You could run the virtual machine like this-
 ```Shell
-[si@buru stage1]$ sudo cp output-qemu/vap-stage1.qcow2 /data
-[si@buru stage1]$ sudo virt-install --name demo \
->               --ram 512 \
->               --disk path=/data/vap-stage1.qcow2 \
->               --import
+[si@buru stage2]$ qemu-system-x86_64 output-qemu/vap-stage2.qcow2
 ```
 
 To remove the box and delete the volume from libvirt (this needs to be
@@ -107,4 +101,39 @@ Vol vap_stage1_vagrant_box_image_0.img deleted
 Provisioning could be done by vagrant or packer. To keep it as similar as possible
 between the 3 images this is done by packer. But being idempotent and as Vagrant
 is there to help with the build, it runs ansible as well.
+
+```Shell
+[si@buru stage2]$ packer build packer_stage2.json
+...
+[si@buru stage2]$ vagrant box add vap_stage2 box/vap_stage2.box
+...
+[si@buru stage2]$ vagrant box add vap_stage2 box/vap_stage2.box
+==> box: Adding box 'vap_stage2' (v0) for provider: 
+    box: Downloading: file:///home/si/workspace/vap/stage2/box/vap_stage2.box
+==> box: Successfully added box 'vap_stage2' (v0) for 'libvirt'!
+[si@buru stage2]$ cd vagrant/
+[si@buru vagrant]$ vagrant up
+Bringing machine 'vap_vm' up with 'libvirt' provider...
+==> vap_vm: Uploading base box image as volume into libvirt storage...
+==> vap_vm: Creating image (snapshot of base box volume).
+==> vap_vm: Creating domain with the following settings...
+==> vap_vm:  -- Name:              vagrant_vap_vm
+<snip>
+==> vap_vm:  -- Command line : 
+==> vap_vm: Creating shared folders metadata...
+==> vap_vm: Starting domain.
+There was an error talking to Libvirt. The error message is shown
+below:
+
+Call to virDomainCreateWithFlags failed: internal error: process exited while connecting to monitor: qemu-system-x86_64: -drive file=/var/lib/libvirt/images/vagrant_vap_vm.img,if=none,id=drive-virtio-disk0,format=qcow2: could not open disk image /var/lib/libvirt/images/vagrant_vap_vm.img: Could not open backing file: Image is not in qcow2 format
+
+[si@buru vagrant]$ sudo file /var/lib/libvirt/images/*
+/var/lib/libvirt/images/vagrant_vap_vm.img:                 QEMU QCOW Image (v2), has backing file (path /var/lib/libvirt/images/vap_stage2_vagrant_box_image_0.img), 10737418240 bytes
+/var/lib/libvirt/images/vap_stage2_vagrant_box_image_0.img: x86 boot sector
+[si@buru vagrant]$ file /var/lib/libvirt/images/vap_stage2_vagrant_box_image_0.img
+/var/lib/libvirt/images/vap_stage2_vagrant_box_image_0.img: x86 boot sector
+[si@buru vagrant]$ 
+```
+
+... so the vagrant box doesn't work. I've not had time to look into this, please help if you know the solution!
 

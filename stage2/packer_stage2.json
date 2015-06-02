@@ -8,7 +8,7 @@
     "builders":
     [
         {
-	        "vm_name": "vap-stage2",
+	    "vm_name": "vap-stage2",
             "type": "qemu",
             "format": "qcow2",
             "accelerator": "kvm",
@@ -33,7 +33,7 @@
 	{
             "type": "shell",
             "execute_command": "echo '{{user `password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
-            "script": "sleepme.sh"
+            "script": "example.sh"
         },
         {
 	    "type": "ansible-local",

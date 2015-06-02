@@ -1,7 +1,19 @@
 ---
 - hosts: all
-  user: root
   remote_user: vagrant
+  sudo: yes
   tasks:
+    - name: set hostname
+      hostname: name=vap-stage2
+
     - name: motd
-      action: copy src=files/motd dest=/etc/update-motd.d/95-ansible owner=root group=root mode=755
+      copy: src=files/motd dest=/etc/update-motd.d/95-ansible owner=root group=root mode=755
+
+    - name: apt update
+      apt: upgrade=safe update_cache=yes
+
+    - name: Install list of packages
+      apt: pkg={{item}} state=installed
+      with_items:
+      - apache2
+      - libapache2-mod-wsgi
