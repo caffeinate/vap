@@ -17,3 +17,30 @@
       with_items:
       - apache2
       - libapache2-mod-wsgi
+      - python-pip
+
+    - name: pip packages
+      pip: name=Flask
+
+    - name: Flask app directory
+      file: path=/data/www/apps/flask_example/ state=directory mode=0755
+
+    - name: apply patch to multiple files under basedir
+      patch: src=files/apache_config.patch basedir=/etc/apache2/sites-available
+      notify:
+      - restart apache
+
+    - name: add flask app
+      copy: src=files/flask_example.py dest=/data/www/apps/flask_example/
+      notify:
+      - restart apache
+
+    - name: add flask wsgi handler
+      copy: src=files/flask_example.wsgi dest=/data/www/apps/flask_example/
+      notify:
+      - restart apache
+
+
+  handlers:
+  - name: restart apache
+    service: name=apache2 state=restarted

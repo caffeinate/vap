@@ -1,0 +1,18 @@
+*** 000-default.conf	2014-01-07 13:23:42.000000000 +0000
+--- 000-default.conf.new	2015-06-02 13:01:11.875738000 +0000
+***************
+*** 26,31 ****
+--- 26,38 ----
+  	# following line enables the CGI configuration for this host only
+  	# after it has been globally disabled with "a2disconf".
+  	#Include conf-available/serve-cgi-bin.conf
++ 
++         WSGIScriptAlias / /data/www/apps/flask_example/flask_example.wsgi
++         <Directory /data/www/apps/flask_example/>
++           AllowOverride None
++           Require all granted
++         </Directory>
++ 
+  </VirtualHost>
+  
+  # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
