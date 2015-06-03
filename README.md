@@ -18,6 +18,10 @@ This repository is a reference to tie together the tools I used-
 Ansible Galaxy is great but I want this to be simple and self contained so it
 is easier to use for reference.
 
+*This project is in progress. At present it doesn't build the VMware image but
+does build libvirt/KVM+qemu and AWS AMI images.*
+
+
 ###Stage 1 - build qemu+kvm image
 
 I mainly develop on a Linux workstation and like libvirt for running virtual 
