@@ -75,7 +75,7 @@ vagrant@packer-vap:~$
 
 You could run the virtual machine like this-
 ```Shell
-[si@buru stage2]$ qemu-system-x86_64 output-qemu/vap-stage2.qcow2
+[si@buru stage2]$ qemu-system-x86_64 -m 1G output-qemu/vap-stage1.qcow2
 ```
 
 To remove the box and delete the volume from libvirt (this needs to be
@@ -98,12 +98,87 @@ Vol vap_stage1_vagrant_box_image_0.img deleted
 
 ###Stage 2 - Packer+Ansible
 
+Both an [AWS AMI](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) and a qemu/kvm
+disk image can be built simultaneously with packer. Vagrant boxes could also be build for
+both but I'm only building the vagrant image for qemu/kvm.
+
 Provisioning could be done by vagrant or packer. To keep it as similar as possible
-between the 3 images this is done by packer. But being idempotent and as Vagrant
+between the potentially 4 images this is done by packer. But being idempotent and as Vagrant
 is there to help with the build, it runs ansible as well.
 
+
+####AWS setup
+
+[Create an IAM user](https://console.aws.amazon.com/iam/home#users) and generate an access
+key for this user. The `Access Key ID` and `Secret Access Key` are only available at the
+moment you create the user. i.e. copy and paste into straight away.
+
+For this user, create an 'Custom' 'Inline policy' with at least these permissions-
+```JSON
+{
+  "Statement": [{
+      "Effect": "Allow",
+      "Action" : [
+        "ec2:AttachVolume",
+        "ec2:CreateVolume",
+        "ec2:DeleteVolume",
+        "ec2:CreateKeypair",
+        "ec2:DeleteKeypair",
+        "ec2:CreateSecurityGroup",
+        "ec2:DeleteSecurityGroup",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:CreateImage",
+        "ec2:RunInstances",
+        "ec2:TerminateInstances",
+        "ec2:StopInstances",
+        "ec2:DescribeVolumes",
+        "ec2:DetachVolume",
+        "ec2:DescribeInstances",
+        "ec2:CreateSnapshot",
+        "ec2:DeleteSnapshot",
+        "ec2:DescribeSnapshots",
+        "ec2:DescribeImages",
+        "ec2:RegisterImage",
+        "ec2:CreateTags",
+        "ec2:ModifyImageAttribute"
+      ],
+      "Resource" : "*"
+  }]
+}
+```
+
+The custom parts of the packer build config needed to build the AWS AMI have been separated into
+a json file called `aws_params.json`. Create this file and add your credentials/config like this-
+
+```JSON
+{
+  "aws_access_key": "AKAKAKAKAKAKAKAKAKAK",
+  "aws_secret_key": "z5z5z5z5z5z5z5z5z5z5z5z5z5z5z5z5z5z5z5z5",
+  "aws_vpc_id": "vpc-abcde123",
+  "aws_subnet_id": "subnet-88844422"
+}
+```
+
+The `vpc_id` and `subnet_id` can be found in the [vpc section](https://console.aws.amazon.com/vpc/home)
+of the AWS console. You need these to build an AMI because an instance will need to be
+fired up in order to run the provisioners.
+
+Build both AWS AMI and qemu/kvm qcow2 disk image with this command-
 ```Shell
 [si@buru stage2]$ packer build packer_stage2.json
+```
+
+or just AWS like this-
+```Shell
+[si@buru stage2]$ packer build -only=amazon-ebs -var-file=aws_params.json packer_stage2.json
+```
+
+Same as stage 1, you could run the virtual machine like this-
+```Shell
+[si@buru stage2]$ qemu-system-x86_64 -m 1G output-qemu/vap-stage2.qcow2
+```
+
+
 ...
 [si@buru stage2]$ vagrant box add vap_stage2 box/vap_stage2.box
 ...

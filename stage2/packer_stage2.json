@@ -2,7 +2,11 @@
     "variables": {
         "user": "vagrant",
         "password": "vagrant",
-        "disk_size": 10000
+        "disk_size": 10000,
+        "aws_access_key": "",
+	"aws_secret_key": "",
+	"aws_vpc_id": "",
+	"aws_subnet_id": ""
     },
 
     "builders":
@@ -16,7 +20,7 @@
             "disk_size": "{{ user `disk_size`}}",
 
             "iso_url": "../stage1/output-qemu/vap-stage1.qcow2",
-            "iso_checksum": "c3acf2c6a5171877314f6059ac5a64b2",
+            "iso_checksum": "e7169194fa9a53404f7c5486c58aa960",
             "iso_checksum_type": "md5",
 
             "http_directory": "http",
@@ -26,7 +30,19 @@
             "shutdown_command": "echo '{{user `password`}}'|sudo -S shutdown -P now",
 
             "boot_wait": "2s"
-        }
+        },
+        {
+	    "type": "amazon-ebs",
+	    "access_key": "{{user `aws_access_key`}}",
+	    "secret_key": "{{user `aws_secret_key`}}",
+	    "region": "eu-west-1",
+	    "source_ami": "ami-47a23a30",
+	    "instance_type": "t2.micro",
+	    "ssh_username": "ubuntu",
+	    "ami_name": "vap-example {{timestamp}}",
+	    "vpc_id": "{{user `aws_vpc_id`}}",
+	    "subnet_id": "{{user `aws_subnet_id`}}"
+      }
     ],
 
     "provisioners": [
@@ -36,18 +52,32 @@
             "script": "example.sh"
         },
         {
+            "type": "shell",
+            "execute_command": "echo '{{user `password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+            "scripts": [
+                "scripts/packages.sh"
+            ]
+        },
+        {
 	    "type": "ansible-local",
-	    "playbook_file": "../ansible/playbook.yml",
-	    "playbook_dir": "../ansible/"
+	    "playbook_file": "../ansible/playbook_libvirt.yml",
+	    "playbook_dir": "../ansible/",
+            "only": ["qemu"]
+	},
+	{
+	    "type": "ansible-local",
+	    "playbook_file": "../ansible/playbook_aws.yml",
+	    "playbook_dir": "../ansible/",
+            "only": ["amazon-ebs"]
 	}
     ],
 
     "post-processors": [
         {
-	    "only": ["qemu"],
             "keep_input_artifact": true,
             "output": "box/vap_stage2.box",
-            "type": "vagrant"
+            "type": "vagrant",
+	    "only": ["qemu"]
         }
     ]
 }

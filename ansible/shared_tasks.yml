@@ -1,16 +1,6 @@
 ---
-- hosts: all
-  remote_user: vagrant
-  sudo: yes
-  tasks:
-    - name: set hostname
-      hostname: name=vap-stage2
-
-    - name: motd
-      copy: src=files/motd dest=/etc/update-motd.d/95-ansible owner=root group=root mode=755
-
     - name: apt update
-      apt: upgrade=safe update_cache=yes
+      apt: upgrade=dist update_cache=yes
 
     - name: Install list of packages
       apt: pkg={{item}} state=installed
@@ -25,8 +15,15 @@
     - name: Flask app directory
       file: path=/data/www/apps/flask_example/ state=directory mode=0755
 
-    - name: apply patch to multiple files under basedir
-      patch: src=files/apache_config.patch basedir=/etc/apache2/sites-available
+# patch is brilliant but contained a relative paths bug @ version 1.91
+# which is the latest version in the PPA. Easier to use copy until
+# the fix filters through
+#    - name: patch apache config
+#      patch: src=files/apache_config.patch basedir=/etc/apache2/sites-available
+#      notify:
+#      - restart apache
+    - name: copy apache config
+      copy: src=files/apache_config_full dest=/etc/apache2/sites-available/000-default.conf
       notify:
       - restart apache
 
@@ -40,7 +37,3 @@
       notify:
       - restart apache
 
-
-  handlers:
-  - name: restart apache
-    service: name=apache2 state=restarted

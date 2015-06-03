@@ -2,3 +2,4 @@ stage?/vagrant/.vagrant/
 stage?/box/
 stage?/packer_cache/
 stage?/output-qemu/
+stage2/aws_params.json

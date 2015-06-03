@@ -1,0 +1,15 @@
+---
+- hosts: all
+  remote_user: vagrant
+  sudo: yes
+  tasks:
+    - name: set hostname
+      hostname: name=vap-stage2
+
+    - name: motd
+      copy: src=files/motd dest=/etc/update-motd.d/95-ansible owner=root group=root mode=755
+
+    - include: shared_tasks.yml
+
+  handlers:
+    - include: shared_handlers.yml

@@ -1,0 +1,12 @@
+---
+- hosts: all
+  remote_user: ubuntu
+  sudo: yes
+  tasks:
+    - name: set hostname
+      hostname: name=vap-demo
+
+    - include: shared_tasks.yml
+
+  handlers:
+    - include: shared_handlers.yml
